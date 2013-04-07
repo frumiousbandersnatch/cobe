@@ -34,7 +34,11 @@ class DumpCommand(object):
         for token, token_id in model.tokens.token_ids.iteritems():
             print token, decode_one(token_id)
 
-        print "Normalized tokens:"
+        missing_methods = True
+        if missing_methods:
+            return
+
+        # print "Normalized tokens:"
         for key in model._prefix_keys("n"):
             print key
 
@@ -108,6 +112,7 @@ class TrainIrcLogCommand:
 
     @classmethod
     def _irc_lines(cls, files, ignored_nicks=None, only_nicks=None):
+        lines_parsed = 0
         for line in files:
             if files.isfirstline():
                 print
@@ -121,15 +126,17 @@ class TrainIrcLogCommand:
                                          only_nicks=only_nicks)
 
             if msg is not None:
+                lines_parsed += 1
                 yield msg.decode("utf-8", "replace")
 
         # Finish the count status line printed above
-        print
+        print ' ... %d lines parsed' % lines_parsed
 
     @classmethod
     def _parse_irc_message(cls, msg, ignored_nicks=None, only_nicks=None):
         # only match lines of the form "HH:MM <nick> message"
-        match = re.match("\d+:\d+\s+<(.+?)>\s+(.*)", msg)
+        #match = re.match("\d+:\d+\s+<(.+?)>\s+(.*)", msg)
+        match = re.match(r'\[\d{2}:\d{2}:\d{2}\]\s<(.*)>\s(.*)', msg)
         if not match:
             return None
 

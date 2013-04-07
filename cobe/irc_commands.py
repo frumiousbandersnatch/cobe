@@ -3,6 +3,7 @@
 import irc.client
 import logging
 import re
+from irclib import nm_to_n
 
 import cobe.brain
 
@@ -57,17 +58,19 @@ class IrcClient(irc.client.SimpleIRCClient):
         self._check_connection()
 
     def on_pubmsg(self, conn, event):
-        user = irc.client.nm_to_n(event.source())
+        #user = irc.client.nm_to_n(event.source())
+        user = nm_to_n(event.source)
 
         # ignore specified nicks
         if self.ignored_nicks and user in self.ignored_nicks:
             return
 
         # only respond on channels
-        if not irc.client.is_channel(event.target()):
+        if not irc.client.is_channel(event.target):
             return
 
-        msg = event.arguments()[0]
+        msg = event.arguments[0]
+        print 'MESSAGE:',type(msg),msg
 
         # strip pasted nicks from messages
         msg = re.sub("<\S+>\s+", "", msg)
@@ -83,14 +86,16 @@ class IrcClient(irc.client.SimpleIRCClient):
             text = msg
 
         # convert message to unicode
-        text = text.decode("utf-8").strip()
+        ## No, don't.  It's already in unicode
+        #text = text.decode("utf-8").strip()
 
         if not self.only_nicks or user in self.only_nicks:
             self.brain.train(text)
 
         if to == conn.nickname:
             reply = self.brain.reply(text)
-            conn.privmsg(event.target(), "%s: %s" % (user, reply))
+            print 'REPLY:',type(reply),reply
+            conn.privmsg(event.target, "%s: %s" % (user, reply))
 
 
 class IrcClientCommand(object):
