@@ -26,7 +26,7 @@ class DumpCommand(object):
 
     @staticmethod
     def run(args):
-        store = park.SQLiteStore("cobe.store")
+        store = park.SQLiteStore(args.brain)
         analyzer = analysis.WhitespaceAnalyzer()
         model = Model(analyzer, store)
 
@@ -60,7 +60,7 @@ class TrainCommand(object):
 
     @staticmethod
     def run(args):
-        brain = Brain("cobe.store")
+        brain = Brain(args.brain)
 
         files = fileinput.FileInput(args.file,
                                     openhook=fileinput.hook_compressed)
@@ -100,7 +100,7 @@ class TrainIrcLogCommand:
 
     @classmethod
     def run(cls, args):
-        brain = Brain("cobe.store")
+        brain = Brain(args.brain)
 
         files = fileinput.FileInput(args.file,
                                     openhook=fileinput.hook_compressed)
@@ -169,7 +169,7 @@ class ConsoleCommand:
 
     @staticmethod
     def run(args):
-        brain = Brain("cobe.store")
+        brain = Brain(args.brain)
 
         history = os.path.expanduser("~/.cobe_history")
         try:

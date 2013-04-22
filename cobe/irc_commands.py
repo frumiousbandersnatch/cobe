@@ -122,7 +122,7 @@ class IrcClientCommand(object):
 
     @staticmethod
     def run(args):
-        brain = cobe.brain.Brain("cobe.store")
+        brain = cobe.brain.Brain(args.brain)
 
         client = IrcClient(brain, args.ignored_nicks, args.only_nicks)
         client.connect(args.server, args.port, args.nick)

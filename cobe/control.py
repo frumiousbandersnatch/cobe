@@ -18,6 +18,8 @@ def get_parser():
 
     parser = argparse.ArgumentParser(description="Cobe control")
     parser.add_argument("--debug", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--brain", default="cobe.store", 
+                        help="Set brain storage file")
     cmd_parsers = parser.add_subparsers()
 
     add_module(cmd_parsers, commands)
