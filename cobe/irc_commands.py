@@ -70,7 +70,7 @@ class IrcClient(irc.client.SimpleIRCClient):
             return
 
         msg = event.arguments[0]
-        print 'MESSAGE:',type(msg),msg
+        #print 'MESSAGE:',type(msg),msg
 
         # strip pasted nicks from messages
         msg = re.sub("<\S+>\s+", "", msg)
@@ -94,7 +94,7 @@ class IrcClient(irc.client.SimpleIRCClient):
 
         if to == conn.nickname:
             reply = self.brain.reply(text)
-            print 'REPLY:',type(reply),reply
+            #print 'REPLY:',type(reply),reply
             conn.privmsg(event.target, "%s: %s" % (user, reply))
 
 
