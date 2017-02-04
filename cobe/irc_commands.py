@@ -25,6 +25,7 @@ class IrcClient(irc.client.SimpleIRCClient):
 
     def _check_connection(self):
         connection = self.connection
+        connection.buffer.errors = 'replace'
 
         if connection.is_connected():
             logger.debug("connection: ok")
@@ -95,7 +96,9 @@ class IrcClient(irc.client.SimpleIRCClient):
         if to == conn.nickname:
             reply = self.brain.reply(text)
             #print 'REPLY:',type(reply),reply
-            conn.privmsg(event.target, "%s: %s" % (user, reply))
+            msg = "%s: %s" % (user, reply)
+            if len(msg) < 500:
+                conn.privmsg(event.target, msg)
 
 
 class IrcClientCommand(object):
@@ -115,6 +118,8 @@ class IrcClientCommand(object):
                                help="IRC server port")
         subparser.add_argument("-n", "--nick", default="cobe",
                                help="IRC nickname")
+        subparser.add_argument("-P", "--password", default=None,
+                               help="IRC password")
         subparser.add_argument("-c", "--channel", action="append",
                                required=True, help="IRC channel")
 
@@ -125,7 +130,7 @@ class IrcClientCommand(object):
         brain = cobe.brain.Brain(args.brain)
 
         client = IrcClient(brain, args.ignored_nicks, args.only_nicks)
-        client.connect(args.server, args.port, args.nick)
+        client.connect(args.server, args.port, args.nick, args.password)
 
         for channel in args.channel:
             client.join(channel)
